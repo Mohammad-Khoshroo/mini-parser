@@ -1,0 +1,16 @@
+--- Parsing Input: "x = 10 + 20 * 3;" ---
+Parse Tree: (program (statement x = (expr (expr 10) + (expr (expr 20) * (expr 3))) ;) <EOF>)
+Status: Parsing completed successfully (No syntax errors).
+
+--- Parsing Input: "(a + b) / (c - 4);" ---
+Parse Tree: (program (statement (expr (expr ( (expr (expr a) + (expr b)) )) / (expr ( (expr (expr c) - (expr 4)) ))) ;) <EOF>)
+Status: Parsing completed successfully (No syntax errors).
+
+--- Parsing Input: "y = ;" ---
+line 1:4 mismatched input ';' expecting {ID, INT, '('}
+Parse Tree: (program (statement y = expr ;) <EOF>)
+Status: Parsing completed with 1 syntax error(s).
+
+--- Parsing Input: "total = x + 5 * (y - 2);" ---
+Parse Tree: (program (statement total = (expr (expr x) + (expr (expr 5) * (expr ( (expr (expr y) - (expr 2)) )))) ;) <EOF>)
+Status: Parsing completed successfully (No syntax errors).
