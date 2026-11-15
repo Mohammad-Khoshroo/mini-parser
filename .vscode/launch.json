@@ -5,8 +5,8 @@
             "name": "ANTLR4: Visual Parse Tree from File",
             "type": "antlr-debug",
             "request": "launch",
-            "input": "tests/input.txt",
-            "grammar": "vrparser.g4",
+            "input": "tests/07_expressions.sl",
+            "grammar": "TemplateParser.g4",
             "startRule": "program",
             "printParseTree": true,
             "visualParseTree": true

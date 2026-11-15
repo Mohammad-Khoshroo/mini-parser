@@ -1,86 +1,63 @@
-# Mini-Parser (Syntax Analyzer)
+# Mini-Parser (Syntax Analyzer Template)
 
-A standalone parser project based on ANTLR 4 that performs lexical and syntax analysis, validates input statements against a grammar, and produces a concrete parse tree (CST / AST).
+A modular parser template based on ANTLR 4 supporting separated Lexer and Parser grammars:
+* **`<GrammarName>Lexer.g4`**: Lexical rules, token definitions, keywords, operators, and literals.
+* **`<GrammarName>Parser.g4`**: Context-free grammar rules for program structure, statements, types, and expressions.
 
 ---
 
 ## 1. Prerequisites
 
-### A. Java Development Kit (JDK)
-Ensure Java (version 11 or higher, recommended 17 or 21) is installed:
+### A. Java Development Kit (JDK 11+)
 * **WSL / Linux:**
   ```bash
-  # Check installation
   java -version && javac -version
-
-  # Install if missing (Ubuntu/Debian)
   sudo apt update && sudo apt install default-jdk -y
   ```
 * **Windows (PowerShell):**
   ```powershell
-  # Check installation
   java -version; javac -version
-
-  # Install via winget if missing
   winget install EclipseAdoptium.Temurin.17.JDK
   ```
 
-### B. VS Code Extensions
-1. **ANTLR4 grammar syntax support** (by *Mike Lischke*, ID: `mike-lischke.vscode-antlr4`):
-   * Provides graphical parse tree rendering, debugger integration, syntax highlighting, and railroad diagrams.
-   * **Important (WSL Users):** When working in VS Code Remote-WSL (`WSL: Ubuntu`), go to the Extensions tab and click **"Install in WSL: Ubuntu"** for this extension.
-2. **WSL** (by *Microsoft*):
-   * Required when developing inside WSL from VS Code.
+### B. VS Code Extension
+* **`ANTLR4 grammar syntax support`** (by *Mike Lischke*, ID: `mike-lischke.vscode-antlr4`).
+* If working in WSL, ensure it is installed in WSL ("Install in WSL: Ubuntu").
 
 ---
 
-## 2. Viewing the Graphical Parse Tree in VS Code
+## 2. Visual Parse Tree in VS Code (F5)
 
-You can view the interactive visual parse tree in VS Code through multiple convenient methods:
-
-### Method 1: Automatic Parsing from File via F5
-This method reads the test string directly from a file, logs results to the Debug Console, and automatically opens the visual parse tree.
-
-1. Put your test string/expression inside **`tests/input.txt`** (e.g., `x = 10 + 20 * 3;`).
-2. Press **`F5`** on your keyboard (or go to the **Run and Debug** tab in VS Code and click the green Play button: *"ANTLR4: Visual Parse Tree from File"*).
-3. **Result:**
-   * The textual parse tree and syntax error logs are printed in the **Debug Console**.
-   * An interactive **Visual Parse Tree** webview panel opens automatically, displaying the color-coded parse tree nodes.
-
-> **Note:** This feature is configured via `.vscode/launch.json` and `.vscode/settings.json`.
+1. Place your test input file in the `tests/` directory (e.g. `tests/<test-file>`).
+2. Ensure `.vscode/launch.json` specifies your parser grammar and test file:
+   * `"grammar": "<GrammarName>Parser.g4"`
+   * `"input": "tests/<test-file>"`
+   * `"startRule": "<startRule>"` (e.g. `program`)
+3. Press **`F5`** in VS Code.
+4. The extension automatically parses the input file, displays the interactive **Visual Parse Tree** panel, and logs the textual tree to the **Debug Console**.
 
 ---
 
-### Method 2: Interactive Webview via Right-Click
-1. Open `vrparser.g4`.
-2. Right-click on the start rule (`program`).
-3. Select **"ANTLR4: Show Graphical Parse Tree"**.
-4. In the opened panel, type your input string to view the live tree and token stream.
+## 3. How to Build and Run via Terminal
 
----
+> **Template Placeholders:**
+> * `<GrammarName>`: Base name of your grammar (e.g., `MyLang`).
+> * `<StartRule>`: The entry point rule of your parser (e.g., `program`).
+> * `<TestFile>`: Path to your test input file (e.g., `tests/sample.txt`).
 
-### Method 3: Railroad Diagrams
-1. Open `vrparser.g4`.
-2. Right-click on any parser or lexer rule (e.g. `expr` or `program`).
-3. Select **"ANTLR4: Show Railroad Diagram for Rule"** to view a visual flowchart of that production rule.
-
----
-
-## 3. Running the Parser via Terminal
-
-### Option A: Running in WSL / Linux (Bash)
+### A. In WSL / Linux (Bash)
 ```bash
 # 1. Create output directory
 mkdir -p .antlr
 
-# 2. Generate lexer and parser source files
-java -jar utils/antlr-4.13.1-complete.jar -o .antlr vrparser.g4
+# 2. Generate Java files from both Lexer and Parser grammars
+java -jar utils/antlr-4.13.1-complete.jar -o .antlr <GrammarName>Lexer.g4 <GrammarName>Parser.g4
 
-# 3. Compile parser.java and generated sources
+# 3. Compile runner and generated sources
 javac -d .antlr -cp ".:utils/antlr-4.13.1-complete.jar" parser.java .antlr/*.java
 
-# 4. Run the parser application
-java -cp ".antlr:utils/antlr-4.13.1-complete.jar" parser
+# 4. Run the parser on a test file
+java -cp ".antlr:utils/antlr-4.13.1-complete.jar" parser <TestFile>
 ```
 
 **Clean up (WSL / Linux):**
@@ -90,21 +67,21 @@ rm -rf .antlr && mkdir -p .antlr
 
 ---
 
-### Option B: Running in Windows (PowerShell)
-*(Note: In Windows, the classpath separator is `;` instead of `:`)*
+### B. In Windows (PowerShell)
+*(Note: Classpath delimiter is `;` on Windows)*
 
 ```powershell
 # 1. Create output directory if it does not exist
 if (!(Test-Path .antlr)) { New-Item -ItemType Directory -Path .antlr }
 
-# 2. Generate lexer and parser source files
-java -jar utils\antlr-4.13.1-complete.jar -o .antlr vrparser.g4
+# 2. Generate Java files from both Lexer and Parser grammars
+java -jar utils\antlr-4.13.1-complete.jar -o .antlr <GrammarName>Lexer.g4 <GrammarName>Parser.g4
 
-# 3. Compile parser.java and generated sources
-javac -d .antlr -cp ".;utils\antlr-4.13.1-complete.jar" parser.java (Get-ChildItem .antlr\*.java)
+# 3. Compile runner and generated sources
+javac -d .antlr -cp ".;utils\antlr-4.13.1-complete.jar" parser.java (Get-ChildItem .antlr\<GrammarName>*.java)
 
-# 4. Run the parser application
-java -cp ".antlr;utils\antlr-4.13.1-complete.jar" parser
+# 4. Run the parser on a test file
+java -cp ".antlr;utils\antlr-4.13.1-complete.jar" parser <TestFile>
 ```
 
 **Clean up (Windows PowerShell):**
@@ -114,19 +91,19 @@ if (Test-Path .antlr) { Remove-Item -Recurse -Force .antlr }; New-Item -ItemType
 
 ---
 
-### Option C: Running in Windows (Command Prompt / CMD)
+### C. In Windows (Command Prompt / CMD)
 ```cmd
-:: 1. Create directory if not exists
+:: 1. Create output directory
 if not exist .antlr mkdir .antlr
 
-:: 2. Generate lexer and parser source files
-java -jar utils\antlr-4.13.1-complete.jar -o .antlr vrparser.g4
+:: 2. Generate Java files from both grammars
+java -jar utils\antlr-4.13.1-complete.jar -o .antlr <GrammarName>Lexer.g4 <GrammarName>Parser.g4
 
 :: 3. Compile
 javac -d .antlr -cp ".;utils\antlr-4.13.1-complete.jar" parser.java .antlr\*.java
 
 :: 4. Run
-java -cp ".antlr;utils\antlr-4.13.1-complete.jar" parser
+java -cp ".antlr;utils\antlr-4.13.1-complete.jar" parser <TestFile>
 ```
 
 **Clean up (Windows CMD):**
@@ -136,26 +113,22 @@ rmdir /s /q .antlr 2>nul & mkdir .antlr
 
 ---
 
-## 4. Using ANTLR's Built-in TestRig (`grun`) Directly on Files
+## 4. Running via Built-in TestRig (`grun`)
 
-You can also run ANTLR's built-in GUI or textual tree inspector directly on `tests/input.txt`:
+* **Terminal Text Tree:**
+  ```bash
+  # WSL / Linux:
+  java -cp ".antlr:utils/antlr-4.13.1-complete.jar" org.antlr.v4.gui.TestRig <GrammarName> <StartRule> -tree <TestFile>
 
-* **Graphical Window (Desktop GUI):**
-  * WSL / Linux:
-    ```bash
-    java -cp ".antlr:utils/antlr-4.13.1-complete.jar" org.antlr.v4.gui.TestRig vrparser program -gui tests/input.txt
-    ```
-  * Windows (PowerShell):
-    ```powershell
-    java -cp ".antlr;utils\antlr-4.13.1-complete.jar" org.antlr.v4.gui.TestRig vrparser program -gui tests\input.txt
-    ```
+  # Windows (PowerShell):
+  java -cp ".antlr;utils\antlr-4.13.1-complete.jar" org.antlr.v4.gui.TestRig <GrammarName> <StartRule> -tree <TestFile>
+  ```
 
-* **Textual Tree (Export to log):**
-  * WSL / Linux:
-    ```bash
-    java -cp ".antlr:utils/antlr-4.13.1-complete.jar" org.antlr.v4.gui.TestRig vrparser program -tree tests/input.txt > tests/tree.log
-    ```
-  * Windows (PowerShell):
-    ```powershell
-    java -cp ".antlr;utils\antlr-4.13.1-complete.jar" org.antlr.v4.gui.TestRig vrparser program -tree tests\input.txt > tests\tree.log
-    ```
+* **Desktop GUI Tree Window:**
+  ```bash
+  # WSL / Linux:
+  java -cp ".antlr:utils/antlr-4.13.1-complete.jar" org.antlr.v4.gui.TestRig <GrammarName> <StartRule> -gui <TestFile>
+
+  # Windows (PowerShell):
+  java -cp ".antlr;utils\antlr-4.13.1-complete.jar" org.antlr.v4.gui.TestRig <GrammarName> <StartRule> -gui <TestFile>
+  ```
