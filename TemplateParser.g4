@@ -1,11 +1,10 @@
 parser grammar TemplateParser;
 
 options {
-    tokenVocab = TemplateLexer;
+	tokenVocab = TemplateLexer;
 }
 
-// ============================================
-// Program Structure
+// ============================================ Program Structure
 // ============================================
 program: funcDec* main EOF;
 
@@ -13,8 +12,7 @@ funcDec: (VOID | type) ID LPAR ((type ID COL)* type ID)? RPAR LBRACE stmt* RBRAC
 
 main: MAIN LPAR RPAR LBRACE stmt* RBRACE;
 
-// ============================================
-// Statements
+// ============================================ Statements
 // ============================================
 stmt:
 	assign
@@ -27,9 +25,7 @@ stmt:
 
 block: LBRACE stmt* RBRACE;
 
-// ============================================
-// Types
-// ============================================
+// ============================================ Types ============================================
 type: INT | BOOL | STRING | funcptr;
 
 funcptr:
@@ -41,8 +37,7 @@ assign: ID ASSIGN expr SEMI;
 
 ifStmt: IF LPAR expr RPAR stmt (ELSE stmt)?;
 
-// ============================================
-// Expressions (with Precedence)
+// ============================================ Expressions (with Precedence)
 // ============================================
 expr:
 	LPAR expr RPAR
@@ -59,7 +54,8 @@ unary: PLUS | MINUS | NOT;
 comp: LT | LEQ | GT | GEQ | EQ | NEQ;
 logic: LOGICAND | LOGICOR;
 
-lambdaDec: LAMBDA LPAR ((type ID COL)* type ID)? RPAR DARROW expr;
+lambdaDec:
+	LAMBDA LPAR ((type ID COL)* type ID)? RPAR DARROW expr;
 lambdaExpr: LPAR lambdaDec RPAR LPAR ((expr COL)* expr)? RPAR;
 
 funcCall: ID LPAR ((expr COL)* expr)? RPAR;
